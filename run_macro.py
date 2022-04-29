@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# python run_macro.py --target https://brand.naver.com/samlip/products/6510954368 --time 1
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -14,7 +15,7 @@ import time
 parser = argparse.ArgumentParser(description='네이버 스토어 자동구매 매크로 도움말 입니다.')
 # 입력받을 인자값 등록
 parser.add_argument('--target', required=True, help='타겟팅 사이트 설정')
-parser.add_argument('--time', required=False, default = 2, help='페이지 새고고침 시간 설정 [기본값 2초]')
+parser.add_argument('--time', required=False, default = 1, help='페이지 새고고침 시간 설정 [기본값 2초]')
 parser.add_argument('--count', required=False, default = 9999, help='매크로 작동 횟수 설정 [기본값 9999회]')
 parser.add_argument('--option1', required=False, help='구매시 옵션1 선택이 필요한 경우 선택할 옵션을 숫자로 입력 [두번째 옵션을 선택하고자 하면 2]')
 parser.add_argument('--option2', required=False, help='구매시 옵션2 선택이 필요한 경우 선택할 옵션을 숫자로 입력 [두번째 옵션을 선택하고자 하면 2]')
@@ -47,8 +48,12 @@ def main():
 	else:
 		print("LOG: Main Process in done.")
 	finally:
-		os.system("Pause")
+		print("LOG: finally1111111")
+		# os.system("Pause")
+		time.sleep(30)
+		print("LOG: finally222222222")
 		driver.quit()
+		print("LOG: finally333333333")
 
 def get_config():
 	try:
@@ -69,7 +74,7 @@ def login_naver(driver, id, pw):
     driver.execute_script(script)
  
     element = WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.CSS_SELECTOR, "input.btn_global"))
+        EC.presence_of_element_located((By.ID, "log.login"))
     )
     element.click()
     print("LOG: 네이버 로그인 성공")
@@ -83,6 +88,7 @@ def get_driver():
 
 def check_order(driver, macro_count): #재고 확인 및 구매
     driver.refresh();
+   
     try:
         if args.option1 != None:
             driver.find_element_by_xpath("//*[@id=\"wrap\"]/div/div[2]/div[2]/form/fieldset/div[4]/div[1]/ul/li[1]/ul/li[1]/div/select/option[%d]" % (int(args.option1)+1)).click()
@@ -90,11 +96,11 @@ def check_order(driver, macro_count): #재고 확인 및 구매
             driver.find_element_by_xpath("//*[@id=\"wrap\"]/div/div[2]/div[2]/form/fieldset/div[4]/div[1]/ul/li[1]/ul/li[2]/div/select/option[%d]" % (int(args.option2)+1)).click()
         if args.option3 != None:
             driver.find_element_by_xpath("//*[@id=\"wrap\"]/div/div[2]/div[2]/form/fieldset/div[4]/div[1]/ul/li[1]/ul/li[3]/div/select/option[%d]" % (int(args.option3)+1)).click()
-        driver.find_element_by_class_name("buy").click() #구매 버튼 클릭
-        driver.find_element_by_xpath("/html/body/div[10]/div[3]/div[1]/form[1]/div/div[5]/div[1]/div[2]/ul/li[3]/ul/li[4]/span[1]/span").click() # 나중에 결제 버튼 클릭
+        driver.find_element_by_xpath("//*[@id=\"content\"]/div/div[2]/div[2]/fieldset/div[8]/div[1]/div/a").click() #구매 버튼 클릭
+        driver.find_element_by_xpath("//*[@id=\"chargePointScrollArea\"]/div[1]/ul[1]/li[4]/div/span[1]/span").click() # 일반 결제 버튼 클릭1
+        driver.find_element_by_xpath("//*[@id=\"chargePointScrollArea\"]/div[1]/ul[1]/li[4]/ul/li[3]/span[1]/span").click() # 나중에 결제 버튼 클릭2
         print("INFORMATION: 현재 상품 재고가 있습니다 구매를 시도합니다.")
-        driver.find_element_by_xpath("/html/body/div[10]/div[3]/div[1]/form[1]/div/div[5]/div[1]/div[3]/div/span/span").click() # 결재 동의 버튼 클릭
-        driver.find_element_by_xpath("/html/body/div[10]/div[3]/div[1]/form[1]/div/div[7]/button").click() # 결재 버튼 클릭
+        driver.find_element_by_xpath("//*[@id=\"orderForm\"]/div/div[7]/button").click() # 결제 버튼 클릭
         print("INFORMATION: 주문 요청을 전송하였습니다 마이페이지에서 결과확인 및 결제를 진행하여 주십시오.")
         print("INFORMATION: 프로그램을 종료합니다")
     except NoSuchElementException:
